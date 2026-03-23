@@ -1,0 +1,58 @@
+# Core
+streamlit==1.36.0
+pandas==2.2.2
+numpy==1.26.4
+
+# Grafici
+matplotlib==3.8.4
+plotly==5.22.0
+
+# RAG stack e LLM  — SET COERENTE (collaudato su Colab)
+faiss-cpu==1.8.0.post1
+transformers==4.42.4
+sentence-transformers==2.7.0
+torch==2.3.1
+
+# LangChain 0.2.x (core/community/text-splitters allineati)
+langchain==0.2.16
+langchain-core==0.2.38
+langchain-community==0.2.16
+langchain-text-splitters==0.2.2
+
+# OpenAI + wrapper LC: coppia compatibile
+openai==1.44.0  
+langchain-openai==0.1.21
+tiktoken==0.7.0
+
+# Gemini + wrapper LC: coppia compatibile
+langchain-google-genai==1.0.8
+google-generativeai>=0.7.2
+
+# Colab helpers (tunnel)
+pyngrok==7.1.6
+
+# OCR / PDF per il RAG
+pypdf==4.2.0
+# opzione per OCR: tenere le seguenti righe commentade su Colab, da installare solo quando serve
+# opencv-python-headless==4.8.1.78
+# Pillow==10.3.0
+# pytesseract==0.3.10
+
+# Accesso a Google Sheet
+gdown==5.2.0
+gspread==6.1.2
+oauth2client==4.1.3
+
+# Varie utilità + fix warning dipendenze
+requests==2.32.4
+httpx-sse==0.4.0
+
+# Nota per i docenti:
+# - Questo file va copiato nella stessa cartella dei sorgenti Python (es. src/)
+# - In Colab l'installazione si fa con:
+#     %pip install -r /content/drive/MyDrive/Near_Miss_Scuola/src/requirements.txt
+# - In un ambiente locale (es. VSCode + venv) si usa lo stesso comando "pip install -r requirements.txt"
+
+# v06_01 / v06_02 – note interne di versione
+# Nessuna nuova dipendenza introdotta rispetto a v05_06.
+# Cloudflare Tunnel viene usato come binario scaricato a runtime, non da pip.
