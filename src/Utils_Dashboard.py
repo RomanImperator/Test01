@@ -111,7 +111,7 @@ def _numeric_cols_utili(df: pd.DataFrame, exclude: set[str] | None = None) -> li
     if exclude is None:
         exclude = set()
 
-    from config_v06_03 import (
+    from config import (
         NUMERIC_MIN_NON_NULL,
         NUMERIC_MIN_UNIQUE,
         NUMERIC_BLACKLIST,
@@ -415,7 +415,7 @@ def visualizza_dashboard(df: pd.DataFrame):
     # CASO 3.1 — TRACCIATO PREDEFINITO (Near Miss)
     # ------------------------------------------------
     if is_predef:
-        from config_v06_03 import (
+        from config import (
             PREDEF_X_CHOICES,
             Y_COUNT_ONLY_PREDEF,
             ENABLE_DUAL_Y_PREDEF,
@@ -516,7 +516,7 @@ def visualizza_dashboard(df: pd.DataFrame):
     # CASO 3.2 — CSV GENERICO (qualsiasi tracciato)
     # ------------------------------------------------
     else:
-        from config_v06_03 import (
+        from config import (
             DEBUG_NUMERIC_COLS_GENERIC,
             DEBUG_NUMERIC_COLS_GENERIC_EXPANDED,
             X_BLACKLIST_GENERIC,
@@ -1396,8 +1396,8 @@ def gestisci_chatbot(provider: str, embedding_model: str):
 
     # Avviso se indice RAG vuoto
     try:
-        from config_v06_03 import VECTORSTORE_DIR
-        from Utils_RAG_NearMiss_v06_03 import get_index_stats
+        from config import VECTORSTORE_DIR
+        from Utils_RAG import get_index_stats
 
         stats_now = get_index_stats(VECTORSTORE_DIR) or {}
     except Exception:
@@ -1434,7 +1434,7 @@ def gestisci_chatbot(provider: str, embedding_model: str):
         st.markdown('<div class="buttons-row">', unsafe_allow_html=True)
         col_ask, col_clear = st.columns([1, 1])
         with col_ask:
-            from config_v06_03 import BOT_NAME
+            from config import BOT_NAME
 
             invia = st.form_submit_button(
                 f"💬 Chiedi qualcosa a {BOT_NAME}",
@@ -1472,8 +1472,8 @@ def gestisci_chatbot(provider: str, embedding_model: str):
                 st.warning("⚠️ Seleziona un LLM in sidebar prima di inviare.")
             else:
                 try:
-                    from config_v06_03 import VECTORSTORE_DIR
-                    from Utils_RAG_NearMiss_v06_03 import (
+                    from config import VECTORSTORE_DIR
+                    from Utils_RAG import (
                         get_index_stats,
                         rag_answer,
                         ensure_index_smart,
@@ -1741,7 +1741,7 @@ def carica_dati(fonte: str) -> Tuple[Optional[pd.DataFrame], str]:
     """
     df, fonte_dati = None, ""
     if fonte == "google":
-        from config_v06_03 import GOOGLE_SHEET_URL
+        from config import GOOGLE_SHEET_URL
 
         df = carica_da_google_sheet(GOOGLE_SHEET_URL)
         if df is not None:
@@ -1749,7 +1749,7 @@ def carica_dati(fonte: str) -> Tuple[Optional[pd.DataFrame], str]:
 
     if df is None:
         try:
-            from config_v06_03 import DEFAULT_CSV
+            from config import DEFAULT_CSV
 
             df = pd.read_csv(DEFAULT_CSV)
             fonte_dati = "CSV locale/predefinito"
@@ -1771,7 +1771,7 @@ def google_sheet_available(timeout_sec: int = 5) -> Tuple[bool, str]:
 
     def _probe():
         try:
-            from config_v06_03 import GOOGLE_SHEET_URL
+            from config import GOOGLE_SHEET_URL
         except Exception as e:
             return False, f"Errore configurazione: {str(e)}"
 
@@ -1848,8 +1848,8 @@ def pannello_rag(provider: str, embedding_model: str, suffix: str = ""):
     # EXPANDER PRINCIPALE
     # -------------------
     with st.expander("📚 Documenti & Indice (RAG)", expanded=False):
-        from config_v06_03 import RAG_DATA_DIR, VECTORSTORE_DIR
-        from Utils_RAG_NearMiss_v06_03 import (
+        from config import RAG_DATA_DIR, VECTORSTORE_DIR
+        from Utils_RAG import (
             get_index_stats,
             build_vectorstore,
             EMBED_MODEL_HF,
@@ -2075,7 +2075,7 @@ def get_tracciato_record_headers() -> list[str]:
     - Se TRACCIATO_REC_DEFAULT_CSV esiste, lo legge dalla prima riga.
     - In caso contrario, usa un fallback con i nomi colonna principali.
     """
-    from config_v06_03 import TRACCIATO_REC_DEFAULT_CSV
+    from config import TRACCIATO_REC_DEFAULT_CSV
 
     try:
         with open(TRACCIATO_REC_DEFAULT_CSV, "r", encoding="utf-8") as f:
@@ -2157,7 +2157,7 @@ def is_csv_predef(df: pd.DataFrame) -> bool:
     In questa versione: richiede che tutte le colonne definite in
     PREDEF_X_CHOICES siano presenti.
     """
-    from config_v06_03 import PREDEF_X_CHOICES
+    from config import PREDEF_X_CHOICES
 
     required = set(PREDEF_X_CHOICES.values())
     cols = set(df.columns)
@@ -2177,7 +2177,7 @@ def sync_csv_dashboard(df: pd.DataFrame, fonte_dati: str):
     # Protezione NameError locale
     _log = logger if 'logger' in globals() else st
     last = st.session_state.get("fonte_corrente", "")
-    from config_v06_03 import RAG_CSV_DIR, RAG_CSV_FILE
+    from config import RAG_CSV_DIR, RAG_CSV_FILE
 
     sync_necessaria = (fonte_dati != last)
     
@@ -2190,7 +2190,7 @@ def sync_csv_dashboard(df: pd.DataFrame, fonte_dati: str):
     if not sync_necessaria:
         return
         
-    from Utils_RAG_NearMiss_v06_03 import sincronizza_csv_con_rag
+    from Utils_RAG import sincronizza_csv_con_rag
 
     # Hash del contenuto per capire se i dati sono davvero cambiati
     try:

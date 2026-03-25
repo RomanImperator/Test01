@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Near_Miss-SL_v06_03.py
 ======================
@@ -44,7 +43,7 @@ os.environ.setdefault("HF_HUB_DISABLE_TELEMETRY", "1")
 # BLOCCO 3 – IMPORT DAL PROGETTO
 # ============================================================
 # Importo le funzioni REALI da Utils_NearMiss_v06_03.py
-from Utils_NearMiss_v06_03 import (
+from Utils_Dashboard import (
     _init_state,                # Inizializzazione stato sessione
     carica_dati,                # Caricamento CSV locale / Google Sheet
     google_sheet_available,     # Verifica rapida disponibilità Google Sheet
@@ -56,7 +55,7 @@ from Utils_NearMiss_v06_03 import (
 )
 
 # Importo la configurazione
-from config_v06_03 import LLM_MODELS
+from config import LLM_MODELS
 
 
 # ============================================================
@@ -292,8 +291,8 @@ if df is not None:
 # Mostra il tracciato record nella sidebar solo per il CSV locale.
 # ============================================================
 if scelta_sorgente == "💾 CSV Locale (Default)":
-    from config_v06_03 import TRACCIATO_REC_DEFAULT_CSV
-    from config_v06_03 import NOME_FILE_CSV_TRACCIATO_REC_DEFAULT
+    from config import TRACCIATO_REC_DEFAULT_CSV
+    from config import NOME_FILE_CSV_TRACCIATO_REC_DEFAULT
 
     trac_path = TRACCIATO_REC_DEFAULT_CSV
     if os.path.exists(trac_path):

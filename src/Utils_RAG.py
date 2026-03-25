@@ -275,7 +275,7 @@ def _embedding_factory(provider: str, embedding_model: Optional[str]) -> Any:
     # Caso OpenAI embeddings
     if prov == "openai":
         from langchain_openai import OpenAIEmbeddings
-        from config_v06_03 import OPENAI_API_KEY
+        from config import OPENAI_API_KEY
 
         api_key = os.getenv("OPENAI_API_KEY", "").strip().strip('"').strip("'")
         if not api_key:
@@ -291,7 +291,7 @@ def _embedding_factory(provider: str, embedding_model: Optional[str]) -> Any:
 
     # Caso Google embeddings
     if prov == "google":
-        from config_v06_03 import GOOGLE_API_KEY
+        from config import GOOGLE_API_KEY
 
         api_key = os.getenv("GOOGLE_API_KEY", "").strip().strip('"').strip("'")
         if not api_key:
@@ -326,7 +326,7 @@ def _rag_glob_files(rag_dir: str) -> list[str]:
 
     # Import dei parametri di configurazione dal file config
     try:
-        from config_v06_03 import (RAG_CSV_ALIASES, RAG_GLOB_PATTERNS, RAG_SCAN_MAX_DEPTH)
+        from config import (RAG_CSV_ALIASES, RAG_GLOB_PATTERNS, RAG_SCAN_MAX_DEPTH)
     except Exception:
         # Valori di fallback se non definiti
         RAG_CSV_ALIASES = []
@@ -670,7 +670,7 @@ def _collect_documents() -> List[Tuple[str, str]]:
     - Non usata nella pipeline principale (che usa _load_documents),
       ma lasciata come esempio didattico.
     """
-    from config_v06_03 import RAG_DATA_DIR
+    from config import RAG_DATA_DIR
 
     docs = []
 
@@ -917,7 +917,7 @@ def _structured_answer_from_dashboard_csv(query: str) -> Optional[Tuple[str, Dic
     if not (is_count_q or is_env_freq_q):
         return None
 
-    from config_v06_03 import RAG_CSV_DIR, RAG_CSV_FILE
+    from config import RAG_CSV_DIR, RAG_CSV_FILE
 
     csv_path = os.path.join(RAG_CSV_DIR, RAG_CSV_FILE)
     if not os.path.exists(csv_path):
@@ -1016,7 +1016,7 @@ def rag_answer(query: str, provider: str, embedding_model: str, k: int = 4) -> T
     """
     n_chunks = 0
 
-    from config_v06_03 import (
+    from config import (
         RAG_DATA_DIR,
         VECTORSTORE_DIR,
         OPENAI_API_KEY,
@@ -1189,7 +1189,7 @@ def rag_answer(query: str, provider: str, embedding_model: str, k: int = 4) -> T
 def sincronizza_csv_con_rag(df: pd.DataFrame, file_name: str = "dashboard.csv"):
     """
     Salva il CSV corrente della dashboard nella cartella RAG_CSV_DIR
-    (configurata in config_v06_03) con il nome file_name.
+    (configurata in config) con il nome file_name.
 
     Parametri:
     - df: DataFrame che rappresenta i dati della dashboard
@@ -1199,7 +1199,7 @@ def sincronizza_csv_con_rag(df: pd.DataFrame, file_name: str = "dashboard.csv"):
     - path completo del file salvato (stringa) se OK
     - None in caso di errore
     """
-    from config_v06_03 import RAG_CSV_DIR
+    from config import RAG_CSV_DIR
 
     try:
         # Creo la cartella di destinazione se non esiste

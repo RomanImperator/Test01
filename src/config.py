@@ -38,10 +38,17 @@ from pathlib import Path  # (non usato ovunque, ma utile se serve gestire path i
 # Ora il programma cerca prima una variabile d'ambiente chiamata
 # NEARMISS_BASE_PATH: se la trova, usa quel percorso. Se non la trova,
 # usa il percorso Colab di default (che è comunque quello usuale).
-BASE_PATH = os.getenv("NEARMISS_BASE_PATH", "/content/drive/MyDrive/Near_Miss_Scuola")
+if os.getenv("NEARMISS_BASE_PATH"):
+    BASE_PATH = os.getenv("NEARMISS_BASE_PATH")
+elif os.path.exists("/content"):
+    # Siamo presumibilmente su Google Colab
+    BASE_PATH = "/content/drive/MyDrive/Near_Miss_Scuola"
+else:
+    # Siamo in locale: usiamo direttamente la root del progetto (es. Test01)
+    BASE_PATH = str(Path(__file__).resolve().parent.parent)
 
 # Nome del CSV con le risposte del modulo Google Forms (Near Miss)
-NOME_FILE_CSV_DEFAULT = "Segnalazione_Near_Miss-Sicurezza Scolastica_Risposte_del_modulo.csv"
+NOME_FILE_CSV_DEFAULT = "Risposte_del_modulo_1.csv"
 # Percorso completo del CSV principale con le risposte
 DEFAULT_CSV = f"{BASE_PATH}/xls/{NOME_FILE_CSV_DEFAULT}"
 
