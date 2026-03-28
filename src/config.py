@@ -21,6 +21,14 @@ import os
 from collections import OrderedDict
 from pathlib import Path  # (non usato ovunque, ma utile se serve gestire path in modo portabile)
 
+# Carica le variabili d'ambiente dal file .env nella stessa cartella di questo file
+try:
+    from dotenv import load_dotenv
+    _env_path = Path(__file__).resolve().parent / ".env"
+    load_dotenv(dotenv_path=_env_path, override=False)
+except ImportError:
+    pass  # python-dotenv non installato: si usano le variabili di sistema
+
 # =======================================================================
 # ======================  SEZIONE: PERCORSI BASE  =======================
 # =======================================================================
@@ -73,19 +81,19 @@ TRACCIATO_REC_DEFAULT_CSV = f"{BASE_PATH}/xls/{NOME_FILE_CSV_TRACCIATO_REC_DEFAU
 
 PREDEF_X_CHOICES = OrderedDict([
     # "Etichetta visibile"        , "Nome reale della colonna nel CSV"
-    ("📍 Regione",               "📍 Regione"),
-    ("🏫 Luogo/Ambiente",        "🏫 Luogo/Ambiente dell'evento Near Miss"),
-    ("⚠️ Possibili cause",       "⚠️ Possibili cause"),
-    ("⚠️ Possibili conseguenze", "⚠️ Possibili conseguenze"),
+    ("Regione",               "Regione"),
+    ("Luogo/Ambiente",        "Luogo/Ambiente dell'evento Near Miss"),
+    ("Possibili cause",       "Possibili cause"),
+    ("Possibili conseguenze", "Possibili conseguenze"),
 ])
 
 # Colonne da escludere come asse X nel CSV generico
 # (il match viene fatto in modo case-insensitive nel codice)
 X_BLACKLIST_GENERIC = [
     "Informazioni cronologiche",
-    "📝 NOTE",
-    "📅 Data dell'evento Near Miss",
-    "🕒 Ora indicativa dell'evento Near Miss",
+    "NOTE",
+    "Data dell'evento Near Miss",
+    "Ora indicativa dell'evento Near Miss",
 ]
 
 # =======================================================================
@@ -153,10 +161,10 @@ DEBUG_NUMERIC_COLS_GENERIC_EXPANDED: bool = False
 # Ordine di preferenza per la scelta automatica dell’asse X
 # quando si carica un CSV generico.
 GENERIC_X_DEFAULT_PREFERENCES: list[str] = [
-    "📍 Regione",
-    "🏫 Luogo/Ambiente dell'evento Near Miss",
-    "⚠️ Possibili conseguenze",
-    "⚠️ Possibili cause",
+    "Regione",
+    "Luogo/Ambiente dell'evento Near Miss",
+    "Possibili conseguenze",
+    "Possibili cause",
 ]
 
 # =======================================================================
@@ -256,7 +264,7 @@ os.makedirs(RAG_CSV_DIR, exist_ok=True)
 if not os.path.isdir(BASE_PATH):
     import warnings
     warnings.warn(
-        f"\n⚠️ ATTENZIONE: la cartella del progetto non è stata trovata!\n"
+        f"\nATTENZIONE: la cartella del progetto non è stata trovata!\n"
         f"   Percorso cercato: {BASE_PATH}\n"
         f"   Possibili cause:\n"
         f"   - Google Drive non è montato (riesegui la cella di mount in Colab)\n"
@@ -266,8 +274,7 @@ if not os.path.isdir(BASE_PATH):
     )
 
 # ------------------  Google Sheet “ufficiale”  -------------------------
-# ⚠️ ATTENZIONE ⚠️
-# l'ID e il GID a seguire devono essere accoppiati e riferiti allo stesso Google Sheet 
+# ATTENZIONE # l'ID e il GID a seguire devono essere accoppiati e riferiti allo stesso Google Sheet 
 # altrimenti l'URL della condivisione che si va a formare nelle righe successive, non funziona 
  
 # ID del Google Sheet che contiene i dati Near Miss (foglio condiviso)
@@ -280,8 +287,7 @@ ID_DEL_TUO_FOGLIO = "1jpRzYv5YVTOIyMHUDZ3S2oh7mr39LVWwYlupntcDt6Y"
 # GID del foglio presente nello Sheet della simulazione con circa 200 record è "1420572456"
 NUMERO_GID = "58099920"
 
-# ⚠️ ATTENZIONE ⚠️
-# l'ID e il GID richiamati nella composizione dell'URL a seguire, devono essere accoppiati e riferiti allo stesso Google Sheet 
+# ATTENZIONE # l'ID e il GID richiamati nella composizione dell'URL a seguire, devono essere accoppiati e riferiti allo stesso Google Sheet 
 # altrimenti l'URL della condivisione che si va a formare nelle righe successive, non funziona 
 # URL di export in CSV del Google Sheet (usato per scaricare i dati aggiornati)
 GOOGLE_SHEET_URL = (
@@ -336,7 +342,7 @@ Nella conversazione, saluta soltanto se la conversazione è appena iniziata, ovv
 LLM_MODELS = {
     "NESSUN MODELLO": {
         "description": (
-            "⚠️ Nessun modello selezionato. Il bot non funzionerà finché non ne scegli uno.\n"
+            "Nessun modello selezionato. Il bot non funzionerà finché non ne scegli uno.\n"
             "(OpenAI con text-embedding-3-small – Google Gemini con text-embedding-004 – Locale: non attivo in Cloud)"
         ),
         "provider": None,
@@ -345,7 +351,7 @@ LLM_MODELS = {
     },
     "OpenAI": {
         "description": (
-            "✅ OpenAI – embedding: text-embedding-3-small; "
+            "OpenAI – embedding: text-embedding-3-small; "
             "chat (LLM): gpt-4o-mini. Richiede OPENAI_API_KEY."
         ),
         "provider": "openai",
@@ -354,7 +360,7 @@ LLM_MODELS = {
     },
     "Google": {
         "description": (
-            "✅ Google – embedding: text-embedding-004; "
+            "Google – embedding: text-embedding-004; "
             "chat (LLM): gemini-2.5-flash. Richiede credenziali Google."
         ),
         "provider": "google",
@@ -363,8 +369,8 @@ LLM_MODELS = {
     },
     "Locale": {
         "description": (
-            "✅ Locale – es. sentence-transformers + LLM locale "
-            "(ℹ️ DISABILITATO in Colab perché in Cloud; esempio commentato nel codice)."
+            "Locale – es. sentence-transformers + LLM locale "
+            "(DISABILITATO in Colab perché in Cloud; esempio commentato nel codice)."
         ),
         "provider": "locale",
         "embedding_model": "sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
@@ -387,3 +393,9 @@ LLM_MODELS = {
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "")
+
+# Propaga le chiavi come variabili d'ambiente (necessario per le librerie che le leggono direttamente)
+if OPENAI_API_KEY:
+    os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+if GOOGLE_API_KEY:
+    os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY

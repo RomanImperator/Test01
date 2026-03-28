@@ -92,7 +92,7 @@ def _top_series(series: pd.Series, topN: int, add_altri: bool):
 def pulisci_label(s: str) -> str:
     """
     Versione “pubblica” di _pulisci_etichetta:
-    rimuove emoji/prefix tipo '📍 ' dalle etichette.
+    rimuove emoji/prefix tipo '' dalle etichette.
     """
     if not isinstance(s, str):
         return s
@@ -266,7 +266,7 @@ def scegli_assi_personalizzati(df: pd.DataFrame, tipo: str):
 
     - Per la torta: si sceglie un solo campo (X) da visualizzare.
     - Per istogrammi / barre / linee:
-      * checkbox “⚙️ Personalizza asse X e Y”
+      * checkbox “Personalizza asse X e Y”
       * selectbox per X
       * selectbox per Y (escludendo X)
       * inversione X/Y se tipo == "Barre orizzontali"
@@ -282,7 +282,7 @@ def scegli_assi_personalizzati(df: pd.DataFrame, tipo: str):
         return x_col, None
 
     elif tipo in ["Istogramma (conteggio)", "Barre orizzontali", "Linee"]:
-        personalizza = st.sidebar.checkbox("⚙️ Personalizza asse X e Y")
+        personalizza = st.sidebar.checkbox("Personalizza asse X e Y")
         if personalizza:
             colonne = df.columns.tolist()
             asse_x = st.sidebar.selectbox(
@@ -305,7 +305,7 @@ def scegli_assi_personalizzati(df: pd.DataFrame, tipo: str):
 
     # Protezione: X e Y non possono coincidere
     if x_col == y_col:
-        st.warning("⚠️ X e Y non possono essere lo stesso campo. Seleziona colonne diverse.")
+        st.warning("X e Y non possono essere lo stesso campo. Seleziona colonne diverse.")
         return None, None
 
     return x_col, y_col
@@ -324,20 +324,20 @@ def visualizza_dashboard(df: pd.DataFrame):
       - sezione grafici (predefiniti vs generici).
     """
     if df is None or df.empty:
-        st.warning("⚠️ Nessun dato disponibile per la dashboard.")
+        st.warning("Nessun dato disponibile per la dashboard.")
         return
 
     # Spinner mostrato solo al primo rendering della dashboard
     if not st.session_state.get("nm_first_paint_done", False):
         ph = st.empty()
         with ph.container():
-            with st.spinner("⏳ preparo la dashboard…"):
+            with st.spinner("preparo la dashboard…"):
                 import time
                 time.sleep(0.9)
         ph.empty()
         st.session_state["nm_first_paint_done"] = True
 
-    st.success(f"✅ Record caricati: {len(df)}")
+    st.success(f"Record caricati: {len(df)}")
 
     # ----------------------------
     # FILTRI DINAMICI (sidebar)
@@ -346,10 +346,10 @@ def visualizza_dashboard(df: pd.DataFrame):
     df_filt = df.copy()
 
     # In dashboard, nascondo la colonna data “eccessiva” se presente
-    if "📅 Data dell'evento Near Miss" in df_filt.columns:
-        df_filt = df_filt.drop(columns=["📅 Data dell'evento Near Miss"])
+    if "Data dell'evento Near Miss" in df_filt.columns:
+        df_filt = df_filt.drop(columns=["Data dell'evento Near Miss"])
 
-    with st.sidebar.expander("🔎 Filtri sui dati", expanded=False):
+    with st.sidebar.expander("Filtri sui dati", expanded=False):
         for col in list(df_filt.columns):
             # Filtri solo per colonne testuali (evito filtri su numeriche libere)
             if df_filt[col].dtype == "object" or str(df_filt[col].dtype).startswith(
@@ -364,11 +364,11 @@ def visualizza_dashboard(df: pd.DataFrame):
     # ----------------------------
     # TABELLA + DOWNLOAD
     # ----------------------------
-    st.markdown("### 📋 Tabella dati (filtrata)")
+    st.markdown("### Tabella dati (filtrata)")
     st.dataframe(df_filt, use_container_width=True)
     csv_bytes = df_filt.to_csv(index=False).encode("utf-8")
     st.download_button(
-        "⬇️ Scarica tabella filtrata (CSV)",
+        "Scarica tabella filtrata (CSV)",
         csv_bytes,
         "tabella_filtrata.csv",
         "text/csv",
@@ -379,7 +379,7 @@ def visualizza_dashboard(df: pd.DataFrame):
     # CONTROLLI GRAFICI (sidebar)
     # ----------------------------
     st.sidebar.markdown("---")
-    st.sidebar.header("📈 Grafici")
+    st.sidebar.header("Grafici")
     tipo = st.sidebar.selectbox(
         "Tipo di grafico",
         ["Istogramma (conteggio)", "Barre orizzontali", "Torta", "Linee"],
@@ -394,7 +394,7 @@ def visualizza_dashboard(df: pd.DataFrame):
 
     # Piccolo riepilogo dati correnti
     st.sidebar.markdown("---")
-    st.sidebar.header("📄 Dati correnti")
+    st.sidebar.header("Dati correnti")
     try:
         _r, _c = df_filt.shape
     except Exception:
@@ -422,12 +422,12 @@ def visualizza_dashboard(df: pd.DataFrame):
         )
 
         st.info(
-            f"📄 Tracciato **Near Miss** riconosciuto (predefinito/Google Sheet). "
+            f"Tracciato **Near Miss** riconosciuto (predefinito/Google Sheet). "
             f"Dati correnti: **{n_righe} righe**, **{n_colonne} colonne**."
         )
 
         # Scelta asse X tra 4 campi noti (Regione, Ambiente, ecc.)
-        st.sidebar.markdown("### ⚙️ Asse X (predefinito)")
+        st.sidebar.markdown("### Asse X (predefinito)")
         asse_x_label = st.sidebar.radio(
             "Campo sull'asse X",
             list(PREDEF_X_CHOICES.keys()),
@@ -441,13 +441,13 @@ def visualizza_dashboard(df: pd.DataFrame):
         y2_col = None
 
         st.sidebar.caption(
-            "ℹ️ Nel tracciato predefinito la metrica Y è il **conteggio delle segnalazioni**."
+            "Nel tracciato predefinito la metrica Y è il **conteggio delle segnalazioni**."
         )
 
         if Y_COUNT_ONLY_PREDEF:
             y_col = "__conteggio__"
             st.caption(
-                "ℹ️ In questo tracciato, l'asse **Y** resta fisso al *conteggio delle segnalazioni*."
+                "In questo tracciato, l'asse **Y** resta fisso al *conteggio delle segnalazioni*."
             )
 
         if not ENABLE_DUAL_Y_PREDEF:
@@ -488,7 +488,7 @@ def visualizza_dashboard(df: pd.DataFrame):
                 key="predef_rot_pie",
             )
             st.sidebar.caption(
-                "ℹ️ Per il grafico a torta gli assi X/Y non si applicano."
+                "Per il grafico a torta gli assi X/Y non si applicano."
             )
         else:
             rotate_x = st.sidebar.checkbox(
@@ -525,11 +525,11 @@ def visualizza_dashboard(df: pd.DataFrame):
         )
 
         st.info(
-            f"📄 File **generico** caricato: **{n_righe} righe**, **{n_colonne} colonne**."
+            f"File **generico** caricato: **{n_righe} righe**, **{n_colonne} colonne**."
         )
 
         st.sidebar.markdown("---")
-        st.sidebar.subheader("⚙️ Personalizzazione assi")
+        st.sidebar.subheader("Personalizzazione assi")
 
         personalizza = st.sidebar.checkbox(
             "Personalizza asse X e Y", value=False, key="gen_customize"
@@ -578,7 +578,7 @@ def visualizza_dashboard(df: pd.DataFrame):
                 cur = st.session_state.get(key)
                 if cur == x_col:
                     st.info(
-                        f"ℹ️ La colonna **{cur}** non può coincidere con l’asse X. "
+                        f"La colonna **{cur}** non può coincidere con l’asse X. "
                         f"Seleziona un valore diverso per {label}."
                     )
                     st.session_state[key] = None
@@ -606,7 +606,7 @@ def visualizza_dashboard(df: pd.DataFrame):
                         if pd.api.types.is_numeric_dtype(df_filt[c])
                     ]
                     with st.sidebar.expander(
-                        "🛠️ Debug metriche numeriche (CSV generico)",
+                        "Debug metriche numeriche (CSV generico)",
                         expanded=DEBUG_NUMERIC_COLS_GENERIC_EXPANDED,
                     ):
                         st.caption(
@@ -633,7 +633,7 @@ def visualizza_dashboard(df: pd.DataFrame):
                 if y_mode == "Valore colonna numerica":
                     if not num_cols_y:
                         st.info(
-                            "ℹ️ Nessuna metrica numerica disponibile (già usata da X/Y2 o inesistente): "
+                            "Nessuna metrica numerica disponibile (già usata da X/Y2 o inesistente): "
                             "uso il conteggio righe."
                         )
                         y_mode = "Conteggio righe"
@@ -643,7 +643,7 @@ def visualizza_dashboard(df: pd.DataFrame):
                         prev = st.session_state.get("gen_y_numcol")
                         if prev and prev not in num_cols_y:
                             st.info(
-                                f"ℹ️ La colonna **{prev}** non è selezionabile per Y perché già usata su un altro asse. "
+                                f"La colonna **{prev}** non è selezionabile per Y perché già usata su un altro asse. "
                                 "Scelgo una nuova opzione."
                             )
                             st.session_state["gen_y_numcol"] = num_cols_y[0]
@@ -693,7 +693,7 @@ def visualizza_dashboard(df: pd.DataFrame):
 
                         if not candidates_y2:
                             st.info(
-                                "ℹ️ Nessuna metrica numerica disponibile per Y2 "
+                                "Nessuna metrica numerica disponibile per Y2 "
                                 "(già usata da X/Y o inesistente): uso il conteggio righe."
                             )
                             y2_mode = "Conteggio righe"
@@ -703,7 +703,7 @@ def visualizza_dashboard(df: pd.DataFrame):
                             prev2 = st.session_state.get("gen_y2_numcol")
                             if prev2 and prev2 not in candidates_y2:
                                 st.info(
-                                    f"ℹ️ La colonna **{prev2}** non è selezionabile per Y2 perché già usata su un altro asse. "
+                                    f"La colonna **{prev2}** non è selezionabile per Y2 perché già usata su un altro asse. "
                                     "Scelgo una nuova opzione."
                                 )
                                 st.session_state["gen_y2_numcol"] = candidates_y2[0]
@@ -724,7 +724,7 @@ def visualizza_dashboard(df: pd.DataFrame):
 
         # Opzioni di visualizzazione TopN / Altri / rotazioni
         st.sidebar.markdown("---")
-        st.sidebar.subheader("🎛️️ Opzioni di visualizzazione")
+        st.sidebar.subheader("Opzioni di visualizzazione")
 
         topN = st.sidebar.slider("Mostra Top N", 3, 25, 10, key="gen_topN")
         mostra_tutti = st.sidebar.checkbox(
@@ -752,7 +752,7 @@ def visualizza_dashboard(df: pd.DataFrame):
                 key="gen_rot_pie",
             )
             st.sidebar.caption(
-                "ℹ️ Per il grafico a torta gli assi X/Y non si applicano."
+                "Per il grafico a torta gli assi X/Y non si applicano."
             )
         else:
             rotate_x = st.sidebar.checkbox(
@@ -767,7 +767,7 @@ def visualizza_dashboard(df: pd.DataFrame):
         if tipo == "Torta":
             if not x_col:
                 st.info(
-                    "ℹ️ Seleziona un campo valido per l'asse X per visualizzare il grafico."
+                    "Seleziona un campo valido per l'asse X per visualizzare il grafico."
                 )
             else:
                 _render_grafici_generico(
@@ -786,7 +786,7 @@ def visualizza_dashboard(df: pd.DataFrame):
         else:
             if not x_col:
                 st.info(
-                    "ℹ️ Seleziona X (e Y se non vuoi il conteggio) per visualizzare il grafico."
+                    "Seleziona X (e Y se non vuoi il conteggio) per visualizzare il grafico."
                 )
             else:
                 # Aggregazione usata solo se Y è numerico
@@ -830,7 +830,7 @@ def _render_grafici_predef(
     """
     if df is None or df.empty or not x_col:
         st.info(
-            "ℹ️ Seleziona un campo valido per l'asse X per visualizzare il grafico."
+            "Seleziona un campo valido per l'asse X per visualizzare il grafico."
         )
         return
 
@@ -845,7 +845,7 @@ def _render_grafici_predef(
     if tipo == "Torta":
         labels, values, total = _top_series(df[x_col], topN, flag_altri)
         if total == 0 or sum(values) == 0:
-            st.info("ℹ️ Nessun dato da visualizzare.")
+            st.info("Nessun dato da visualizzare.")
             return
 
         # Percentuali sul totale, con correzione di arrotondamento
@@ -959,7 +959,7 @@ def _render_grafici_generico(
     """
     if df is None or df.empty or not x_col:
         st.info(
-            "ℹ️ Seleziona un campo valido per l'asse X per visualizzare il grafico."
+            "Seleziona un campo valido per l'asse X per visualizzare il grafico."
         )
         return
 
@@ -1035,7 +1035,7 @@ def _render_grafici_generico(
         values = head.values.tolist()
         total = float(sum(values))
         if total == 0 or sum(values) == 0:
-            st.info("ℹ️ Nessun dato da visualizzare.")
+            st.info("Nessun dato da visualizzare.")
             return
 
         denom = float(total)
@@ -1102,7 +1102,7 @@ def _render_grafici_generico(
         # Asse Y secondario (se richiesto)
         if y2_col:
             if y2_col not in df.columns:
-                st.warning("⚠️ Campo per asse Y secondario non valido.")
+                st.warning("Campo per asse Y secondario non valido.")
             else:
                 tmp2 = df[[x_col, y2_col]].copy()
                 tmp2[y2_col] = pd.to_numeric(tmp2[y2_col], errors="coerce")
@@ -1283,7 +1283,7 @@ def _init_state():
 
     # Stato per la sorgente dati (Selezione Esclusiva)
     if "tipo_sorgente" not in st.session_state:
-        st.session_state["tipo_sorgente"] = "💾 CSV Locale (Default)"
+        st.session_state["tipo_sorgente"] = "CSV Locale (Default)"
 
     if "fonte_corrente" not in st.session_state:
         st.session_state["fonte_corrente"] = ""
@@ -1358,7 +1358,7 @@ def _model_badge_from_meta(provider: str, meta: dict) -> str:
 def gestisci_chatbot(provider: str, embedding_model: str):
     """
     Gestisce tutta la sezione “Chatbot (RAG)” nella pagina principale:
-    - visualizza il pannello RAG (📚 Documenti & Indice)
+    - visualizza il pannello RAG (Documenti & Indice)
     - controlla se l’indice è vuoto
     - mostra la form per inviare domande
     - esegue la chiamata RAG (rag_answer)
@@ -1389,7 +1389,7 @@ def gestisci_chatbot(provider: str, embedding_model: str):
             normalized.append({"role": "assistant", "content": str(m)})
     st.session_state["chat_log"] = normalized
 
-    st.subheader("🤖 Chatbot (RAG)")
+    st.subheader("Chatbot (RAG)")
 
     # Pannello documenti/indice RAG
     pannello_rag(provider, embedding_model, suffix="_chat")
@@ -1405,8 +1405,8 @@ def gestisci_chatbot(provider: str, embedding_model: str):
 
     if int(stats_now.get("n_chunks", 0) or 0) == 0:
         st.warning(
-            "ℹ️ L'indice RAG è attualmente vuoto (**0 chunk**). "
-            "Apri il pannello **📚 Documenti & Indice (RAG)** qui sopra e usa "
+            "L'indice RAG è attualmente vuoto (**0 chunk**). "
+            "Apri il pannello **Documenti & Indice (RAG)** qui sopra e usa "
             "“(Ri)costruisci indice” prima di fare richieste al Bot."
         )
 
@@ -1437,14 +1437,14 @@ def gestisci_chatbot(provider: str, embedding_model: str):
             from config import BOT_NAME
 
             invia = st.form_submit_button(
-                f"💬 Chiedi qualcosa a {BOT_NAME}",
+                f"Chiedi qualcosa a {BOT_NAME}",
                 type="primary",
                 use_container_width=True,
             )
 
         with col_clear:
             clear = st.form_submit_button(
-                "🗑️ Svuota chat", use_container_width=True
+                "Svuota chat", use_container_width=True
             )
         st.markdown("</div>", unsafe_allow_html=True)
 
@@ -1453,7 +1453,7 @@ def gestisci_chatbot(provider: str, embedding_model: str):
         # -------------------------
         if clear:
             if not (st.session_state.get("textarea_domanda") or "").strip():
-                st.warning("L'area di input non contiene nulla da cancellare 🙂")
+                st.warning("L'area di input non contiene nulla da cancellare ")
             else:
                 st.session_state["chat_log"] = []
                 st.session_state["last_answer_files"] = []
@@ -1467,9 +1467,9 @@ def gestisci_chatbot(provider: str, embedding_model: str):
         if invia:
             testo = (domanda or "").strip()
             if not testo:
-                st.warning("Scrivi una domanda prima di inviare 🙂")
+                st.warning("Scrivi una domanda prima di inviare ")
             elif not provider or provider == "NESSUN MODELLO":
-                st.warning("⚠️ Seleziona un LLM in sidebar prima di inviare.")
+                st.warning("Seleziona un LLM in sidebar prima di inviare.")
             else:
                 try:
                     from config import VECTORSTORE_DIR
@@ -1481,7 +1481,7 @@ def gestisci_chatbot(provider: str, embedding_model: str):
                     )
                     
                     if st.session_state.get("rag_needs_rebuild", False):
-                        with st.spinner("🔄 Aggiorno l'indice RAG prima di rispondere..."):
+                        with st.spinner("Aggiorno l'indice RAG prima di rispondere..."):
                             ensure_index_smart(
                                 RAG_DATA_DIR,
                                 VECTORSTORE_DIR,
@@ -1494,8 +1494,8 @@ def gestisci_chatbot(provider: str, embedding_model: str):
                     stats = get_index_stats(VECTORSTORE_DIR)
                     if (stats.get("n_chunks") or 0) == 0:
                         st.info(
-                            "ℹ️ L’indice RAG è vuoto (0 chunk). "
-                            "Puoi ricostruirlo dal pannello 📚 Documenti & Indice (RAG)."
+                            "L’indice RAG è vuoto (0 chunk). "
+                            "Puoi ricostruirlo dal pannello Documenti & Indice (RAG)."
                         )
                         return
 
@@ -1514,7 +1514,7 @@ def gestisci_chatbot(provider: str, embedding_model: str):
                         if str(provider).lower().startswith("google")
                         else "OpenAI"
                     )
-                    st.error(f"❌ Errore chiamata LLM {prov_name}: {e}")
+                    st.error(f"Errore chiamata LLM {prov_name}: {e}")
                     return
 
                 # Costruzione “fonte RAG” con info su chunk, similarità, file e modello
@@ -1552,7 +1552,7 @@ def gestisci_chatbot(provider: str, embedding_model: str):
                 )
 
                 st.session_state["_clear_input"] = True
-                st.success("✅ Domanda inviata al bot.")
+                st.success("Domanda inviata al bot.")
                 st.rerun()
 
     # -------------------------
@@ -1561,7 +1561,7 @@ def gestisci_chatbot(provider: str, embedding_model: str):
     st.markdown("**Storico conversazione**")
     render_chat()
     st.download_button(
-        "⬇️ Scarica chat (.txt)",
+        "Scarica chat (.txt)",
         data=_chat_as_txt(),
         file_name="conversazione.txt",
         mime="text/plain",
@@ -1635,7 +1635,7 @@ def seleziona_llm_sidebar(LLM_MODELS: dict) -> Tuple[str, str]:
     Restituisce:
       provider, embedding_model
     """
-    st.sidebar.header("🧠 Modello LLM / Embedding")
+    st.sidebar.header("Modello LLM / Embedding")
     provider = st.sidebar.selectbox(
         "Seleziona il provider", list(LLM_MODELS.keys()), index=0
     )
@@ -1652,32 +1652,32 @@ def seleziona_llm_sidebar(LLM_MODELS: dict) -> Tuple[str, str]:
     else:
         chat_model_pretty = str(chat_model_val)
 
-    st.sidebar.markdown("### 📌 Stato corrente")
+    st.sidebar.markdown("### Stato corrente")
     if provider and provider != "NESSUN MODELLO":
         st.sidebar.success(
-            f"✅ **LLM**: {provider} ({chat_model_pretty})\n"
-            f"✅ **Embedding**: {provider} ({embedding_model})"
+            f"**LLM**: {provider} ({chat_model_pretty})\n"
+            f"**Embedding**: {provider} ({embedding_model})"
         )
     else:
         st.sidebar.warning(
-            "⚠️ Nessun LLM/Embedding selezionato.\n"
+            "Nessun LLM/Embedding selezionato.\n"
             "Seleziona un modello dalla lista sopra per iniziare."
         )
 
     # Stato API key (parte centrale della pagina, non in sidebar)
-    st.markdown("### 🔑 Stato API Key")
+    st.markdown("### Stato API Key")
     if provider.lower() == "openai":
         if os.getenv("OPENAI_API_KEY", "").strip():
-            st.success("✅ API Key OpenAI caricata", icon="✅")
+            st.success("API Key OpenAI caricata")
         else:
-            st.error("❌ API Key OpenAI mancante", icon="🚫")
+            st.error("API Key OpenAI mancante")
     elif provider.lower() == "google":
         if os.getenv("GOOGLE_API_KEY", "").strip():
-            st.success("✅ API Key Google caricata", icon="✅")
+            st.success("API Key Google caricata")
         else:
-            st.error("❌ API Key Google mancante", icon="🚫")
+            st.error("API Key Google mancante")
     elif provider in ("NESSUN MODELLO", "Locale"):
-        st.error("❌ Seleziona un Modello LLM / Embedding 🧠", icon="🚫")
+        st.error("Seleziona un Modello LLM / Embedding")
 
     st.markdown("---")
     return provider, embedding_model
@@ -1699,32 +1699,32 @@ def carica_da_google_sheet(url: str, timeout: int = 6) -> Optional[pd.DataFrame]
     import urllib.request, urllib.error
 
     if not url:
-        st.warning("⚠️ URL del Google Sheet mancante nel file di configurazione.")
+        st.warning("URL del Google Sheet mancante nel file di configurazione.")
         return None
 
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
         with urllib.request.urlopen(req, timeout=timeout) as r:
             if r.status != 200:
-                st.warning(f"⚠️ Il Google Sheet non è raggiungibile (HTTP {r.status}).")
+                st.warning(f"Il Google Sheet non è raggiungibile (HTTP {r.status}).")
                 return None
 
         df = pd.read_csv(url)
         return df
 
     except urllib.error.URLError as e:
-        st.warning(f"⚠️ Connessione a Google Sheet non riuscita ({e.reason}).")
-        st.warning(f"⚠️ Impossibile leggere i dati dal Google Sheet: {url}")
+        st.warning(f"Connessione a Google Sheet non riuscita ({e.reason}).")
+        st.warning(f"Impossibile leggere i dati dal Google Sheet: {url}")
 
     except pd.errors.EmptyDataError:
         st.warning(
-            "⚠️ Il Google Sheet è vuoto o non contiene dati leggibili."
+            "Il Google Sheet è vuoto o non contiene dati leggibili."
         )
-        st.warning(f"⚠️ Impossibile leggere i dati dal Google Sheet: {url}")
+        st.warning(f"Impossibile leggere i dati dal Google Sheet: {url}")
 
     except Exception as e:
-        st.warning(f"⚠️ Errore durante la lettura del Google Sheet: {str(e)}")
-        st.warning(f"⚠️ Impossibile leggere i dati dal Google Sheet: {url}")
+        st.warning(f"Errore durante la lettura del Google Sheet: {str(e)}")
+        st.warning(f"Impossibile leggere i dati dal Google Sheet: {url}")
 
     return None
 
@@ -1754,7 +1754,7 @@ def carica_dati(fonte: str) -> Tuple[Optional[pd.DataFrame], str]:
             df = pd.read_csv(DEFAULT_CSV)
             fonte_dati = "CSV locale/predefinito"
         except FileNotFoundError:
-            st.error("❌ Nessun CSV predefinito trovato.")
+            st.error("Nessun CSV predefinito trovato.")
             return None, ""
 
     return df, fonte_dati
@@ -1829,10 +1829,10 @@ def pannello_rag(provider: str, embedding_model: str, suffix: str = ""):
     Mostra il pannello RAG con statistiche e pulsanti di gestione indice:
 
     - Documenti & Indice (RAG): conteggio file e chunk, pulsanti:
-        * 🔁 (Ri)costruisci indice
-        * 🧹 Pulisci e ricostruisci
-        * 🧭 Solo aggiorna manifest/stats
-        * 📎 Scarica lista file indicizzabili (live)
+        * (Ri)costruisci indice
+        * Pulisci e ricostruisci
+        * Solo aggiorna manifest/stats
+        * Scarica lista file indicizzabili (live)
     - Micro-uploader per aggiungere nuovi file in rag_data/ con instradamento
       automatico nelle sottocartelle (pdf/txt/csv/doc/xls/img).
     - Expander “Diagnostica (tecnica)” per visualizzare sources.json e stats.json.
@@ -1840,14 +1840,14 @@ def pannello_rag(provider: str, embedding_model: str, suffix: str = ""):
     Il parametro suffix serve a rendere uniche le chiavi Streamlit se il pannello
     viene richiamato più volte nella stessa pagina.
     """
-    # ⚡ Ottimizzazione performance (v06_03.9):
+    # Ottimizzazione performance (v06_03.9):
     # non eseguiamo più check/refresh automatico dell'indice qui.
     # L'allineamento indice avviene al cambio sorgente o via pulsanti manuali.
 
     # -------------------
     # EXPANDER PRINCIPALE
     # -------------------
-    with st.expander("📚 Documenti & Indice (RAG)", expanded=False):
+    with st.expander("Documenti & Indice (RAG)", expanded=False):
         from config import RAG_DATA_DIR, VECTORSTORE_DIR
         from Utils_RAG import (
             get_index_stats,
@@ -1868,14 +1868,14 @@ def pannello_rag(provider: str, embedding_model: str, suffix: str = ""):
         st.write(f"**Documenti indicizzati:** {n_files} • **Chunk:** {n_chunks}")
         
         if st.session_state.get("rag_needs_rebuild", False):
-            st.warning("⚠️ Sorgente dati aggiornata: indice RAG da allineare (al prossimo invio chat o via pulsanti manuali).")
+            st.warning("Sorgente dati aggiornata: indice RAG da allineare (al prossimo invio chat o via pulsanti manuali).")
 
 
         # --- Colonna 1: (Ri)costruisci indice ---
         cols = st.columns(4)
         with cols[0]:
             if st.button(
-                "🔁 (Ri)costruisci indice",
+                "(Ri)costruisci indice",
                 key=f"btn_ricostruisci_rag{suffix}",
                 help=(
                     "Forza una ricostruzione completa dell’indice FAISS dai file presenti in rag_data/ "
@@ -1893,15 +1893,15 @@ def pannello_rag(provider: str, embedding_model: str, suffix: str = ""):
                         VECTORSTORE_DIR, _rag_glob_files(RAG_DATA_DIR), n_chunks
                     )
                     st.success(
-                        f"✅ Indice (ri)costruito. File: {n_files} • Chunk: {n_chunks}"
+                        f"Indice (ri)costruito. File: {n_files} • Chunk: {n_chunks}"
                     )
                 except Exception as e:
-                    st.error(f"❌ Ricostruzione indice fallita: {e}")
+                    st.error(f"Ricostruzione indice fallita: {e}")
 
         # --- Colonna 2: Pulisci e ricostruisci ---
         with cols[1]:
             if st.button(
-                "🧹 Pulisci e ricostruisci",
+                "Pulisci e ricostruisci",
                 key=f"btn_pulisci_rag{suffix}",
                 help=(
                     "Cancella l’indice FAISS esistente e lo ricrea da zero. "
@@ -1921,15 +1921,15 @@ def pannello_rag(provider: str, embedding_model: str, suffix: str = ""):
                         VECTORSTORE_DIR, _rag_glob_files(RAG_DATA_DIR), n_chunks
                     )
                     st.success(
-                        f"✅ Pulizia + ricostruzione completate. File: {n_files} • Chunk: {n_chunks}"
+                        f"Pulizia + ricostruzione completate. File: {n_files} • Chunk: {n_chunks}"
                     )
                 except Exception as e:
-                    st.error(f"❌ Operazione fallita: {e}")
+                    st.error(f"Operazione fallita: {e}")
 
         # --- Colonna 3: Solo aggiorna manifest/stats ---
         with cols[2]:
             if st.button(
-                "🧭 Solo aggiorna manifest/stats (senza rebuild)",
+                "Solo aggiorna manifest/stats (senza rebuild)",
                 key=f"btn_refresh_manifest{suffix}",
                 help=(
                     "Aggiorna l’elenco file (manifest) e i conteggi, senza ricostruire l’indice. "
@@ -1938,7 +1938,7 @@ def pannello_rag(provider: str, embedding_model: str, suffix: str = ""):
             ):
                 n_files, n_chunks = refresh_manifest_stats(RAG_DATA_DIR, VECTORSTORE_DIR)
                 st.success(
-                    f"✅ Manifest aggiornato. File: {n_files} • Chunk: {n_chunks}"
+                    f"Manifest aggiornato. File: {n_files} • Chunk: {n_chunks}"
                 )
 
         # --- Colonna 4: Download lista file indicizzabili ---
@@ -1948,7 +1948,7 @@ def pannello_rag(provider: str, embedding_model: str, suffix: str = ""):
             except Exception:
                 srcs = []
             st.download_button(
-                "📎 Scarica lista file indicizzabili (live)",
+                "Scarica lista file indicizzabili (live)",
                 help=(
                     "Scarica l’elenco dei file che al momento verrebbero considerati "
                     "per l’indicizzazione (scansione ricorsiva)."
@@ -1964,7 +1964,7 @@ def pannello_rag(provider: str, embedding_model: str, suffix: str = ""):
         # MICRO-UPLOADER FILE
         # -------------------
         st.divider()
-        st.subheader("➕ Aggiungi documenti a rag_data/")
+        st.subheader("Aggiungi documenti a rag_data/")
         upl = st.file_uploader(
             "Trascina qui PDF/TXT/CSV/DOCX/XLS/XLSX/immagini",
             type=[
@@ -2022,10 +2022,10 @@ def pannello_rag(provider: str, embedding_model: str, suffix: str = ""):
 
             if saved:
                 st.success(
-                    f"✅ Caricati {saved} file. Ora aggiorna i conteggi o ricostruisci l’indice."
+                    f"Caricati {saved} file. Ora aggiorna i conteggi o ricostruisci l’indice."
                 )
                 if st.button(
-                    "🔄 Aggiorna manifest/stats adesso",
+                    "Aggiorna manifest/stats adesso",
                     key=f"btn_refresh_after_upload{suffix}",
                 ):
                     n_files, n_chunks = refresh_manifest_stats(
@@ -2038,7 +2038,7 @@ def pannello_rag(provider: str, embedding_model: str, suffix: str = ""):
     # -------------------
     # EXPANDER DIAGNOSTICA
     # -------------------
-    with st.expander("🛠️ Diagnostica (tecnica)", expanded=False):
+    with st.expander("Diagnostica (tecnica)", expanded=False):
         """
         Mostra:
         - sources.json → elenco file usati per costruire l’indice
@@ -2085,16 +2085,16 @@ def get_tracciato_record_headers() -> list[str]:
     except Exception:
         return [
             "Informazioni cronologiche",
-            "📅 Data dell'evento Near Miss",
-            "🕒 Ora indicativa dell'evento Near Miss",
-            "📍 Regione",
-            "🏫 Luogo/Ambiente dell'evento Near Miss",
-            "✍️ Descrizione dell'evento Near Miss",
-            "⚠️ Possibili cause",
-            "⚠️ Possibili conseguenze",
-            "✅ Azione (correttiva) adottata/adottabile o suggerita",
-            "🕵️ Segnalato da (facoltativo)",
-            "📝 NOTE",
+            "Data dell'evento Near Miss",
+            "Ora indicativa dell'evento Near Miss",
+            "Regione",
+            "Luogo/Ambiente dell'evento Near Miss",
+            "Descrizione dell'evento Near Miss",
+            "Possibili cause",
+            "Possibili conseguenze",
+            "Azione (correttiva) adottata/adottabile o suggerita",
+            "Segnalato da (facoltativo)",
+            "NOTE",
         ]
 
 
@@ -2166,7 +2166,7 @@ def is_csv_predef(df: pd.DataFrame) -> bool:
 def sync_csv_dashboard(df: pd.DataFrame, fonte_dati: str):
     """
     Sincronizza il CSV mostrato in dashboard con il RAG quando cambia la fonte
-    dei dati (Google Sheet ↔ CSV locale).
+    dei dati (Google Sheet CSV locale).
 
     Versione ottimizzata per Colab/Drive:
     - salva sempre dashboard.csv quando la fonte cambia (o al primo avvio)
@@ -2203,7 +2203,7 @@ def sync_csv_dashboard(df: pd.DataFrame, fonte_dati: str):
 
     out = sincronizza_csv_con_rag(df)
     if not out:
-        st.error("❌ Errore durante il salvataggio del CSV per il RAG.")
+        st.error("Errore durante il salvataggio del CSV per il RAG.")
         return
 
     st.session_state["fonte_corrente"] = fonte_dati
@@ -2218,7 +2218,7 @@ def sync_csv_dashboard(df: pd.DataFrame, fonte_dati: str):
     if new_hash and new_hash != old_hash:
         st.session_state["rag_needs_rebuild"] = True
         st.session_state["last_dashboard_hash"] = new_hash
-        st.toast("🧠 RAG da aggiornare: lo farò al prossimo invio chat.", icon="ℹ️")
+        st.toast("RAG da aggiornare: lo farò al prossimo invio chat.")
     else:
         st.session_state["rag_needs_rebuild"] = False
         st.session_state["last_dashboard_hash"] = new_hash

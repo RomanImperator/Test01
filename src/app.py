@@ -5,11 +5,11 @@ Pagina principale della WebApp "Near Miss Scuola – EduSafeBot".
 
 Versione v06_03.5 – Fix CSV Generico + Parità Funzionale v06_02
 Changelog rispetto a v06_03.4:
-  - 🆕 MIGLIORIA NUOVA: Selectbox separatore CSV (;  ,  Tab  Auto) in sidebar
-  - ⬅️ EREDITATA da v06_02: Normalizzazione colonna data in datetime (Blocco 13 originale)
-  - ⬅️ EREDITATA da v06_02: Variabili ambiente HuggingFace/Tokenizer (Blocco 3 originale)
-  - ✅ GIÀ PRESENTE: Doppio asse Y per CSV generico (UI in Utils righe 655-711)
-  - ✅ GIÀ PRESENTE: Pannello RAG integrato in gestisci_chatbot()
+  - MIGLIORIA NUOVA: Selectbox separatore CSV (;  ,  Tab  Auto) in sidebar
+  - EREDITATA da v06_02: Normalizzazione colonna data in datetime (Blocco 13 originale)
+  - EREDITATA da v06_02: Variabili ambiente HuggingFace/Tokenizer (Blocco 3 originale)
+  - GIÀ PRESENTE: Doppio asse Y per CSV generico (UI in Utils righe 655-711)
+  - GIÀ PRESENTE: Pannello RAG integrato in gestisci_chatbot()
 
 Commenti in italiano.
 """
@@ -26,12 +26,72 @@ import pandas as pd
 st.set_page_config(
     page_title="Near Miss Scuola – EduSafeBot",
     layout="wide",
-    page_icon="🏫"
+    page_icon="",
+    initial_sidebar_state="collapsed"
 )
+
+# === INIEZIONE CSS PERSONALIZZATO ===
+# Nasconde il branding Streamlit (header, footer) e arrotonda i bottoni
+st.markdown("""
+<style>
+    /* Nascondi header di default (menu e "Deploy") e il footer "Made with Streamlit" */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+
+    /* Variabili palette colori CSS */
+    :root {
+        --amber-glow: #ff9f1c;
+        --honey-bronze: #ffbf69;
+        --white: #ffffff;
+        --frozen-water: #cbf3f0;
+        --light-sea-green: #2ec4b6;
+    }
+
+    /* Rende il layout superiore più pulito se l'header è nascosto */
+    .block-container {
+        padding-top: 2rem !important;
+    }
+
+    /* Arrotondamento drastico dei bottoni Streamlit e ombreggiature */
+    .stButton > button {
+        border-radius: 24px !important;
+        border: 2px solid var(--amber-glow) !important;
+        background-color: var(--white) !important;
+        color: #333333 !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0px 4px 6px rgba(0,0,0,0.05) !important;
+    }
+
+    /* Effetto Hover (Passaggio del mouse) */
+    .stButton > button:hover {
+        background-color: var(--honey-bronze) !important;
+        border-color: var(--amber-glow) !important;
+        color: #fff !important;
+        transform: scale(1.02);
+        box-shadow: 0px 6px 12px rgba(255, 159, 28, 0.4) !important;
+    }
+
+    /* Addolcisce i bordi di input, dropdown e text area */
+    div[data-baseweb="select"] > div, 
+    input[type="text"], 
+    textarea {
+        border-radius: 12px !important;
+        border-color: var(--frozen-water) !important;
+    }
+
+    /* Addolcisce i bordi visivi degli expander (accordion) */
+    div[data-testid="stExpander"] {
+        border-radius: 15px !important;
+        border: 1px solid var(--frozen-water) !important;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 # ============================================================
 # BLOCCO 2 – OTTIMIZZAZIONI AMBIENTE
-# (⬅️ EREDITATA da v06_02 — Blocco 3 originale)
+# (EREDITATA da v06_02 — Blocco 3 originale)
 # Disattiva il parallelismo dei tokenizer e la telemetria HuggingFace
 # per evitare warning e overhead inutili in ambiente Colab.
 # ============================================================
@@ -68,21 +128,7 @@ _init_state()
 # ============================================================
 # BLOCCO 5 – INTESTAZIONE DELLA WEBAPP
 # ============================================================
-st.title("🛡️ Near Miss Scuola – EduSafeBot")
-st.markdown("""
-**Come usare la pagina:**
-1. Verifica che il CSV sia sincronizzato e l'indice RAG aggiornato (sezioni 📊 Dashboard e 📚 RAG).
-2. Esplora i grafici per capire **dove**, **quando** e **come** avvengono i near miss.
-3. Usa il **chatbot** per fare domande del tipo:
-   - *"Quali sono le cause più frequenti di near miss?"*
-   - *"Che tipo di interventi si potrebbero proporre in classe?"*
-4. Durante le lezioni/laboratori, utilizza questa pagina come base per la discussione.
-
-> ℹ️ Questa è una versione sperimentale/prototipale, pensata per progetti pilota e attività
-> di ricerca/didattica. I risultati vanno sempre interpretati insieme ai docenti e ai referenti
-> della sicurezza.
-""")
-
+st.title("Near Miss EduSafeBot")
 
 # ============================================================
 # BLOCCO 6 – MINI FEEDBACK DI BOOT DELL'INTERFACCIA
@@ -90,25 +136,25 @@ st.markdown("""
 # ============================================================
 ph_boot = st.empty()
 with ph_boot.container():
-    st.info("⏳ Avvio interfaccia… caricamento componenti iniziali…")
+    st.info("Avvio interfaccia… caricamento componenti iniziali…")
 ph_boot.empty()
 
 
 # ============================================================
 # BLOCCO 7 – SELEZIONE SORGENTE DATI (RADIO BUTTON ESCLUSIVO)
-# (✅ MIGLIORIA v06_03 — sostituisce checkbox + expander v06_02)
+# (MIGLIORIA v06_03 — sostituisce checkbox + expander v06_02)
 # ============================================================
 # La scelta della sorgente dati è ESCLUSIVA:
 # selezionare un'opzione disabilita automaticamente le altre.
 
 st.sidebar.markdown("---")
-st.sidebar.subheader("🎯 Sorgente Dati")
+st.sidebar.subheader("Sorgente Dati")
 
 # Opzioni disponibili per il selettore
 OPZIONI_SORGENTE = [
-    "💾 CSV Locale (Default)",
-    "🔌 Google Sheet (Live)",
-    "📂 Upload CSV Generico",
+    "CSV Locale (Default)",
+    "Google Sheet (Live)",
+    "Upload CSV Generico",
 ]
 
 # Funzione di callback per sincronizzare la scelta immediatamente
@@ -116,7 +162,7 @@ def sync_sorgente():
     st.session_state["tipo_sorgente"] = st.session_state["radio_sorgente_key"]
 
 # Radio button nella sidebar per scelta esclusiva
-# ✅ MIGLIORIA v06_03.8: uso di on_change e key per eliminare il "rimbalzo" (doppio clic)
+# MIGLIORIA v06_03.8: uso di on_change e key per eliminare il "rimbalzo" (doppio clic)
 scelta_sorgente = st.sidebar.radio(
     "Seleziona l'origine dei dati:",
     options=OPZIONI_SORGENTE,
@@ -138,31 +184,31 @@ fonte_dati = ""
 
 
 # --- CASO 1: GOOGLE SHEET ---
-if scelta_sorgente == "🔌 Google Sheet (Live)":
+if scelta_sorgente == "Google Sheet (Live)":
     # Verifico se il Google Sheet è raggiungibile
     disponibile, err_msg = google_sheet_available(timeout_sec=5)
     if disponibile:
         try:
-            with st.spinner("⏳ Connessione a Google Sheet in corso…"):
+            with st.spinner("Connessione a Google Sheet in corso…"):
                 df, fonte_dati = read_google_with_timeout(10)
             if df is not None:
-                st.success(f"✅ Dati sincronizzati da Google Sheet ({len(df)} record).")
+                st.success(f"Dati sincronizzati da Google Sheet ({len(df)} record).")
             else:
                 df, fonte_dati = carica_dati("csv")
         except Exception as e:
-            st.error(f"❌ Errore durante il caricamento: {e}")
+            st.error(f"Errore durante il caricamento: {e}")
             df, fonte_dati = carica_dati("csv")
     else:
-        st.error(f"❌ [v06_03.8.2] Google Sheet non raggiungibile. Motivo: {err_msg}")
-        st.info("💡 Suggerimento: Verifica che il foglio sia impostato come **'Chiunque abbia il link può visualizzare'** su Google Sheets.")
+        st.error(f"Google Sheet non raggiungibile. Motivo: {err_msg}")
+        st.info("Suggerimento: Verifica che il foglio sia impostato come **'Chiunque abbia il link può visualizzare'** su Google Sheets.")
         df, fonte_dati = carica_dati("csv")
 
 
 # --- CASO 2: UPLOAD CSV GENERICO ---
-elif scelta_sorgente == "📂 Upload CSV Generico":
+elif scelta_sorgente == "Upload CSV Generico":
 
     # ---------------------------------------------------------------
-    # 🆕 MIGLIORIA NUOVA: Scelta del separatore CSV da parte dell'utente.
+    # MIGLIORIA NUOVA: Scelta del separatore CSV da parte dell'utente.
     # In Italia il separatore piu' comune e' il punto e virgola ";",
     # mentre lo standard internazionale e' la virgola ",".
     # L'opzione "Rileva automaticamente" usa csv.Sniffer per indovinare.
@@ -260,24 +306,24 @@ elif scelta_sorgente == "📂 Upload CSV Generico":
 # --- CASO 3: CSV LOCALE (DEFAULT) ---
 else:
     df, fonte_dati = carica_dati("csv")
-    st.success(f"✅ Utilizzo dati locali predefiniti ({len(df)} record).")
+    st.success(f"Utilizzo dati locali predefiniti ({len(df)} record).")
 
 
 # ============================================================
 # BLOCCO 9 – NORMALIZZAZIONE COLONNA DATA
-# (⬅️ EREDITATA da v06_02 — Blocco 13 originale)
+# (EREDITATA da v06_02 — Blocco 13 originale)
 # Converte la colonna data in formato datetime per consentire
 # filtri temporali e ordinamenti corretti.
 # ============================================================
 if df is not None and not df.empty:
-    col_data = "📅 Data dell'evento Near Miss"
+    col_data = "Data dell'evento Near Miss"
     if col_data in df.columns:
         df[col_data] = pd.to_datetime(df[col_data], errors="coerce")
 
 
 # ============================================================
 # BLOCCO 10 – SINCRONIZZAZIONE RAG (quando cambia la fonte dati)
-# (✅ MIGLIORIA v06_03 — automatizza la sync al cambio fonte)
+# (MIGLIORIA v06_03 — automatizza la sync al cambio fonte)
 # ============================================================
 # Se la fonte dati è cambiata rispetto all'ultima volta, aggiorno
 # il CSV nella cartella RAG e ricostruisco l'indice se necessario.
@@ -287,35 +333,35 @@ if df is not None:
 
 # ============================================================
 # BLOCCO 11 – TRACCIATO RECORD (CSV PREDEFINITO)
-# (⬅️ EREDITATA da v06_02 — Blocco 11 originale)
+# (EREDITATA da v06_02 — Blocco 11 originale)
 # Mostra il tracciato record nella sidebar solo per il CSV locale.
 # ============================================================
-if scelta_sorgente == "💾 CSV Locale (Default)":
+if scelta_sorgente == "CSV Locale (Default)":
     from config import TRACCIATO_REC_DEFAULT_CSV
     from config import NOME_FILE_CSV_TRACCIATO_REC_DEFAULT
 
     trac_path = TRACCIATO_REC_DEFAULT_CSV
     if os.path.exists(trac_path):
         df_tracciato = pd.read_csv(trac_path, nrows=0)
-        st.sidebar.markdown("### 📑 Tracciato record (CSV predefinito)")
+        st.sidebar.markdown("### Tracciato record (CSV predefinito)")
         st.sidebar.dataframe(
             pd.DataFrame({"Colonne": df_tracciato.columns}),
             use_container_width=True,
         )
         st.sidebar.download_button(
-            "⬇️ Scarica tracciato record",
+            "Scarica tracciato record",
             data=(",".join(df_tracciato.columns)).encode("utf-8"),
             file_name=NOME_FILE_CSV_TRACCIATO_REC_DEFAULT,
             mime="text/csv",
             key="btn_tracciato_record",
         )
     else:
-        st.sidebar.warning("⚠️ Tracciato record non trovato nella cartella xls.")
+        st.sidebar.warning("Tracciato record non trovato nella cartella xls.")
 
 
 # ============================================================
 # BLOCCO 12 – SELEZIONE LLM IN SIDEBAR
-# (⬅️ EREDITATA da v06_02 — Blocco 5 originale)
+# (EREDITATA da v06_02 — Blocco 5 originale)
 # seleziona_llm_sidebar restituisce (provider, embedding_model)
 # ============================================================
 provider, embedding_model = seleziona_llm_sidebar(LLM_MODELS)
@@ -329,16 +375,16 @@ provider, embedding_model = seleziona_llm_sidebar(LLM_MODELS)
 #   - Il DOPPIO ASSE Y per CSV generico è gestito internamente
 #     nella sezione "CASO 3.2 — CSV GENERICO" di Utils (righe 655-711).
 #     Appare come checkbox "Attiva asse Y secondario (Y2)".
-#     (✅ GIÀ PRESENTE — ereditato da v06_02)
+#     (GIÀ PRESENTE — ereditato da v06_02)
 #
 # Chatbot:
 #   - gestisci_chatbot(provider, embedding_model) include:
 #     pannello RAG + form domanda + storico chat
-#     (✅ Integra il Blocco 12 del vecchio v06_02)
+#     (Integra il Blocco 12 del vecchio v06_02)
 
 if df is not None:
     # Due tab principali: Dashboard e Chatbot
-    tab_dash, tab_chat = st.tabs(["📊 Dashboard Statistica", "💬 Assistente AI (RAG)"])
+    tab_dash, tab_chat = st.tabs(["Dashboard Statistica", "Assistente AI (RAG)"])
 
     with tab_dash:
         # La dashboard include già la tabella, i filtri e tutti i grafici
@@ -350,4 +396,4 @@ if df is not None:
         gestisci_chatbot(provider, embedding_model)
 
 else:
-    st.error("❌ Errore critico: impossibile caricare i dati da nessuna fonte.")
+    st.error("Errore critico: impossibile caricare i dati da nessuna fonte.")

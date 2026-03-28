@@ -1,0 +1,15 @@
+[theme]
+# Colore primario (honey-bronze) per evidenziazioni e accenti standard
+primaryColor = "#ffbf69"
+
+# Sfondo principale bianco
+backgroundColor = "#ffffff"
+
+# Sfondo secondario (frozen-water) per la sidebar
+secondaryBackgroundColor = "#cbf3f0"
+
+# Colore testo (un grigio scuro per leggibilità su sfondo chiaro)
+textColor = "#333333"
+
+# Font dell'app
+font = "sans serif"

@@ -195,7 +195,7 @@ def _load_faiss_store(
 
     except Exception as e:
         # Messaggio di warning in UI, poi rilancio l’eccezione
-        st.warning(f"⚠️ Impossibile caricare l’indice FAISS ({e}); verrà ricostruito se richiesto.")
+        st.warning(f"Impossibile caricare l’indice FAISS ({e}); verrà ricostruito se richiesto.")
         raise
 
 
@@ -1051,10 +1051,10 @@ def rag_answer(query: str, provider: str, embedding_model: str, k: int = 4) -> T
         vs = _load_faiss_store(VECTORSTORE_DIR, prov_e, model_e)
     except Exception as e:
         msg = (
-            "ℹ️ L’indice RAG non è ancora pronto. Apri l’expander "
-            "“📚 Indice RAG (FAISS)” e premi:\n"
-            "• “💾 Sincronizza CSV → RAG” (se vuoi allineare il CSV attuale)\n"
-            "• “🧱 Costruisci/Aggiorna indice” (per creare l’indice)"
+            "L’indice RAG non è ancora pronto. Apri l’expander "
+            "“Indice RAG (FAISS)” e premi:\n"
+            "• “Sincronizza CSV → RAG” (se vuoi allineare il CSV attuale)\n"
+            "• “Costruisci/Aggiorna indice” (per creare l’indice)"
         )
         return msg, {"chunks": 0, "avg_score": 0.0, "files": [], "error": str(e), "sources": []}
 
@@ -1151,7 +1151,7 @@ def rag_answer(query: str, provider: str, embedding_model: str, k: int = 4) -> T
 
     except Exception as e:
         # In caso di errore, mostro un messaggio leggibile
-        answer = f"❌ Errore chiamata LLM {prov.capitalize()}: {e}"
+        answer = f"Errore chiamata LLM {prov.capitalize()}: {e}"
         # Provo a ricavare il nome modello usato, se possibile
         try:
             model_used
@@ -1213,5 +1213,5 @@ def sincronizza_csv_con_rag(df: pd.DataFrame, file_name: str = "dashboard.csv"):
 
         return out_path
     except Exception as e:
-        st.error(f"❌ Errore salvataggio CSV per RAG: {e}")
+        st.error(f"Errore salvataggio CSV per RAG: {e}")
         return None
